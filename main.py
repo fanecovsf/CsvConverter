@@ -2,11 +2,12 @@ import PySimpleGUI as sg
 import pandas as pd
 import os
 import layouts
+from util.util import Util
 
 #Parameters
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-THEME = 'Dark2'
+THEME = 'Dark'
 
 APP_NAME = 'CSV Conversor'
 
@@ -15,7 +16,8 @@ APP_NAME = 'CSV Conversor'
 
 class WindowPattern:
     def __init__(self):
-        self.theme = THEME
+        self.theme = sg.theme(THEME)
+
         pass
 
 #Initial screen
@@ -75,6 +77,44 @@ class DataframeEditor(WindowPattern):
             if event == sg.WIN_CLOSED or event == 'Menu':
                 window.close()
                 break
+
+            if event == 'Select column types':
+                window.disable()
+                ColumnTypes(columns, data)
+                window.enable()
+                window.bring_to_front()
+
+
+class ColumnTypes(WindowPattern):
+    def __init__(self, columns, data):
+        super().__init__()
+
+        window = sg.Window(APP_NAME, layout=layouts.columnsLayout(columns))
+
+        while True:
+            event, self.value = window.read()
+
+            if event == sg.WIN_CLOSED or event == 'Close':
+                window.close()
+                break
+
+            if event == '-CONV-':
+                if self.value['-PATH-'] == '':
+                    sg.popup('Select a valid folder.', no_titlebar=True)
+
+                else:
+                    try:
+                        column_types = [self.value[f'-TYPE-{i}-'] for i in range(len(columns))]
+                        members = [', '.join(set([str(row[i]) for row in data])) for i in range(len(columns))]
+
+                        Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
+
+                        sg.popup('Success!', no_titlebar=True)
+                        window.close()
+                        break
+                    
+                    except Exception as e:
+                        sg.popup(f'Error: {e}')
 
 
 #Execution
