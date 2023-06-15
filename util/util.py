@@ -55,17 +55,20 @@ class Util:
         df = pd.read_csv(csv_file_path)
 
         # Read the metadata file to determine the table structure
-        meta_df = pd.read_csv(meta_file_path, skiprows=1, encoding='ISO-8859-1')
+        meta_df = pd.read_csv(meta_file_path, encoding='ISO-8859-1')
 
         # Determine the number of columns and rows
-        num_rows = meta_df.iloc[0]['Members']
+        num_columns = len(meta_df)
+        num_rows = len(meta_df.iloc[0]['MEMBERS'])
+
+        print(num_rows)
 
         # Create the table as a pandas DataFrame
-        table = pd.DataFrame(columns=['#', 'DATA'] + list(meta_df['Field']))
+        table = pd.DataFrame(columns=['#', 'DATA'] + list(meta_df['FIELD']))
 
         # Fill in the table with data from the CSV file
         for i in range(num_rows):
-            row = [str(i + 1), df.iloc[i, 0]] + list(meta_df['Member'])
+            row = [str(i + 1), df.iloc[i, 0]] + list(meta_df['MEMBERS'])
             table.loc[i] = row
 
         # Save the table to a new CSV file
