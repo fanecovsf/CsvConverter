@@ -1,5 +1,4 @@
 import PySimpleGUI as sg
-import pandas as pd
 
 #Parameters
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -45,7 +44,7 @@ def columnsLayout(columns):
         [sg.Text('Select the types:')],
         [sg.Column(col_layout, size=(400, 300), scrollable=True, vertical_scroll_only=True)],
         [sg.Push(), sg.Button('Convert', key='-CONV-', font=('Arial', 12), size=(15, 0), pad=(0, 10)), sg.FolderBrowse('Select folder', target='-PATH-', font=('Arial', 12), size=(15, 0)), sg.Push()],
-        [sg.Input('', key='-PATH-', readonly=True, size=(30,0))]
+        [sg.Input('', key='-PATH-')]
     ]
 
     return layout

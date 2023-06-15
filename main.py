@@ -53,20 +53,21 @@ class Conversor(WindowPattern):
                         rows = 1000
 
                     df = pd.read_csv(fullPath, sep=';', encoding='UTF-8')
+                    fullData = df.values.tolist()
                     df = df.head(rows)
                     data = df.values.tolist()
                     df.columns = [col.strip() for col in df.columns]
                     columns = list(df.columns)
 
                     window.disable()
-                    DataframeEditor(data, columns)
+                    DataframeEditor(data=data,fullData=fullData, columns=columns, fullPath=fullPath)
                     window.enable()
                     window.bring_to_front()
                     
 
 
 class DataframeEditor(WindowPattern):
-    def __init__(self, data, columns):
+    def __init__(self, data, fullData, columns, fullPath):
         super().__init__()
 
         window = sg.Window(APP_NAME, layout=layouts.tableLayout(data, columns), size=(1000,480))
@@ -80,13 +81,13 @@ class DataframeEditor(WindowPattern):
 
             if event == 'Select column types':
                 window.disable()
-                ColumnTypes(columns, data)
+                ColumnTypes(columns, fullData, initialCsvPath=fullPath)
                 window.enable()
                 window.bring_to_front()
 
 
 class ColumnTypes(WindowPattern):
-    def __init__(self, columns, data):
+    def __init__(self, columns, data, initialCsvPath):
         super().__init__()
 
         window = sg.Window(APP_NAME, layout=layouts.columnsLayout(columns))
@@ -103,18 +104,22 @@ class ColumnTypes(WindowPattern):
                     sg.popup('Select a valid folder.', no_titlebar=True)
 
                 else:
-                    try:
-                        column_types = [self.value[f'-TYPE-{i}-'] for i in range(len(columns))]
-                        members = [', '.join(set([str(row[i]) for row in data])) for i in range(len(columns))]
+                    #try:
+                    column_types = [self.value[f'-TYPE-{i}-'] for i in range(len(columns))]
+                    members = [', '.join(set([str(row[i]) for row in data])) for i in range(len(columns))]
 
-                        Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
+                    Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
 
-                        sg.popup('Success!', no_titlebar=True)
-                        window.close()
-                        break
+                    metaPath = os.path.join(self.value['-PATH-'], 'x_meta.txt')
+
+                    Util.createFlatCsv2(initialCsvPath, metaPath,self.value['-PATH-'])
+
+                    sg.popup('Success!', no_titlebar=True)
+                    window.close()
+                    break
                     
-                    except Exception as e:
-                        sg.popup(f'Error: {e}')
+                    #except Exception as e:
+                        #sg.popup(f'Error: {e}')
 
 
 #Execution
