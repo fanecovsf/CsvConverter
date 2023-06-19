@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import layouts
 from util.util import Util
+import time
+import datetime
 
 #Parameters
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -54,6 +56,10 @@ class Conversor(WindowPattern):
 
                     df = pd.read_csv(fullPath, sep=';', encoding='UTF-8')
                     fullData = df.values.tolist()
+                    if len(df) < rows:
+                        rows = len(df)
+                    else:
+                        pass
                     df = df.head(rows)
                     data = df.values.tolist()
                     df.columns = [col.strip() for col in df.columns]
@@ -105,16 +111,20 @@ class ColumnTypes(WindowPattern):
 
                 else:
                     #try:
+                    print(datetime.datetime.now())
                     column_types = [self.value[f'-TYPE-{i}-'] for i in range(len(columns))]
                     members = [', '.join(set([str(row[i]) for row in data])) for i in range(len(columns))]
 
                     Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
+                    time.sleep(3)
 
                     metaPath = os.path.join(self.value['-PATH-'], 'x_meta.txt')
 
-                    Util.createFlatCsv2(initialCsvPath, metaPath,self.value['-PATH-'])
+                    #Util.createFlatCsv2(initialCsvPath, metaPath,self.value['-PATH-'])
+                    Util.transform_metadata_to_csv(metaPath, os.path.join(self.value['-PATH-'], 'x_datos_planos.csv'))
 
                     sg.popup('Success!', no_titlebar=True)
+                    print(datetime.datetime.now())
                     window.close()
                     break
                     

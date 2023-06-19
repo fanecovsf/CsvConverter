@@ -28,53 +28,39 @@ class Util:
                 file.write(row)
 
 
-    def createFlatCsv(csv_file_path, mainPath):
-        # Read the CSV file into a pandas DataFrame
-        df = pd.read_csv(csv_file_path)
+    def transform_metadata_to_csv(metadata_file, csvFile):
+        metadata = pd.read_csv(metadata_file, encoding='iso-8859-1')
 
-        # Determine the number of columns and rows
-        num_rows = len(df)
+        # Obter o número de colunas e linhas da tabela
+        num_columns = len(metadata) + 1  # Número de linhas no arquivo de metadados
+        num_rows = metadata[metadata['TYPE'].isin(['DIMENSION', 'DATA'])]['MEMBERS'].apply(lambda x: len(x.split(','))).prod()
 
-        # Create the table as a pandas DataFrame
-        table = pd.DataFrame(columns=['#', 'DATA'] + df.columns)
+        # Criar a tabela vazia
+        columns = ['#', 'DATA'] + metadata[metadata['TYPE'] == 'DIMENSION']['FIELD'].tolist() + ['DATA']
+        table = pd.DataFrame(columns=columns, index=range(num_rows))
 
-        # Fill in the table with data from the CSV file
-        for i in range(num_rows):
-            row = [str(i + 1), df.iloc[i, 0]] + df.iloc[i, 1:].tolist()
-            table.loc[i] = row
+        # Preencher os dados na tabela
+        row_num = 0
+        for i, row in metadata.iterrows():
+            field_type = row['TYPE']
+            field_name = row['FIELD']
+            members = row['MEMBERS'].split(',')
 
-        # Save the table to a new CSV file
-        flat_csv_file = os.path.join(mainPath, 'x_datos_planos.csv')
-        table.to_csv(flat_csv_file, index=False)
+            if field_type == 'DIMENSION':
+                for member in members:
+                    table.loc[row_num, '#'] = row_num + 1
+                    table.loc[row_num, 'DATA'] = members[0]
+                    table.loc[row_num, field_name] = member
+                    table.loc[row_num, 'DATA'] = ','.join([f'dados_{j+1}' for j in range(len(metadata[metadata['TYPE'] == 'TIME']['MEMBERS'].tolist()))])
+                    row_num += 1
+            elif field_type == 'DATA':
+                for member in members:
+                    table.loc[row_num, '#'] = row_num + 1
+                    table.loc[row_num, 'DATA'] = members[0]
+                    table.loc[row_num, field_name] = member
+                    table.loc[row_num, 'DATA'] = ','.join([f'dados_{j+1}' for j in range(len(metadata[metadata['TYPE'] == 'TIME']['MEMBERS'].tolist()))])
+                    row_num += 1
 
-        print(f"CSV conversion completed. Output file: {flat_csv_file}")
-
-
-    def createFlatCsv2(csv_file_path, meta_file_path, mainPath):
-        # Read the CSV file into a pandas DataFrame
-        df = pd.read_csv(csv_file_path)
-
-        # Read the metadata file to determine the table structure
-        meta_df = pd.read_csv(meta_file_path, encoding='ISO-8859-1')
-
-        # Determine the number of columns and rows
-        num_columns = len(meta_df)
-        num_rows = len(meta_df.iloc[0]['MEMBERS'])
-
-        print(num_rows)
-
-        # Create the table as a pandas DataFrame
-        table = pd.DataFrame(columns=['#', 'DATA'] + list(meta_df['FIELD']))
-
-        # Fill in the table with data from the CSV file
-        for i in range(num_rows):
-            row = [str(i + 1), df.iloc[i, 0]] + list(meta_df['MEMBERS'])
-            table.loc[i] = row
-
-        # Save the table to a new CSV file
-        flat_csv_file = os.path.join(mainPath, 'x_datos_planos.csv')
-        table.to_csv(flat_csv_file, index=False)
-
-        print(f"CSV conversion completed. Output file: {flat_csv_file}")
+        table.to_csv(csvFile, index=False)
 
 
