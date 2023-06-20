@@ -110,26 +110,32 @@ class ColumnTypes(WindowPattern):
                     sg.popup('Select a valid folder.', no_titlebar=True)
 
                 else:
-                    #try:
                     print(datetime.datetime.now())
                     column_types = [self.value[f'-TYPE-{i}-'] for i in range(len(columns))]
                     members = [', '.join(set([str(row[i]) for row in data])) for i in range(len(columns))]
 
-                    Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
-                    time.sleep(3)
+                    if column_types.count('TIME') > 1:
+                        sg.popup('Must be just 1 "Time" column selected. Please, try again.', no_titlebar=True)
 
-                    metaPath = os.path.join(self.value['-PATH-'], 'x_meta.txt')
+                    elif column_types.count('DATA') < 1:
+                        sg.popup('Must be at least 1 "Data" column selected. Please, try again.', no_titlebar=True)
 
-                    #Util.createFlatCsv2(initialCsvPath, metaPath,self.value['-PATH-'])
-                    Util.transform_metadata_to_csv(metaPath, os.path.join(self.value['-PATH-'], 'x_datos_planos.csv'))
+                    elif column_types.count('DIMENSIONS') < 1:
+                        sg.popup('Must be at least 1 "Dimension" column selected. Please, try again.', no_titlebar=True)
 
-                    sg.popup('Success!', no_titlebar=True)
-                    print(datetime.datetime.now())
-                    window.close()
-                    break
+                    else:
+                        Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
+                        time.sleep(3)
+
+                        metaPath = os.path.join(self.value['-PATH-'], 'x_meta.txt')
+
+                        Util.transform_metadata_to_csv(metaPath, os.path.join(self.value['-PATH-'], 'x_datos_planos.csv'))
+
+                        sg.popup('Success!', no_titlebar=True)
+                        print(datetime.datetime.now())
+                        window.close()
+                        break
                     
-                    #except Exception as e:
-                        #sg.popup(f'Error: {e}')
 
 
 #Execution

@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import csv
+import itertools
 
 #Parameters
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -31,35 +32,36 @@ class Util:
     def transform_metadata_to_csv(metadata_file, csvFile):
         metadata = pd.read_csv(metadata_file, encoding='iso-8859-1')
 
-        # Obter o número de colunas e linhas da tabela
-        num_columns = len(metadata) + 1  # Número de linhas no arquivo de metadados
-        num_rows = metadata[metadata['TYPE'].isin(['DIMENSION', 'DATA'])]['MEMBERS'].apply(lambda x: len(x.split(','))).prod()
+        time_members = metadata.loc[metadata['TYPE'] == 'TIME', 'MEMBERS'].iloc[0].split(', ')
+        dimensions = metadata.loc[metadata['TYPE'] == 'DIMENSION', 'MEMBERS'].str.split(', ')
+        data_members = metadata.loc[metadata['TYPE'] == 'DATA', 'MEMBERS'].str.split(', ')
+        field_names = metadata.loc[metadata['TYPE'] != 'TIME', 'FIELD'].tolist()
 
-        # Criar a tabela vazia
-        columns = ['#', 'DATA'] + metadata[metadata['TYPE'] == 'DIMENSION']['FIELD'].tolist() + ['DATA']
+        num_rows = 1
+        for dimension in dimensions:
+            num_rows *= len(dimension)
+
+        num_columns = len(metadata) - 2
+
+        columns = ['#', 'DATA'] + field_names + ['DATA']
         table = pd.DataFrame(columns=columns, index=range(num_rows))
 
-        # Preencher os dados na tabela
         row_num = 0
-        for i, row in metadata.iterrows():
-            field_type = row['TYPE']
-            field_name = row['FIELD']
-            members = row['MEMBERS'].split(',')
+        for data_member in data_members:
+            for dimension_values in itertools.product(*dimensions):
+                table.loc[row_num, '#'] = row_num + 1
+                table.loc[row_num, 'DATA'] = data_member[0]
 
-            if field_type == 'DIMENSION':
-                for member in members:
-                    table.loc[row_num, '#'] = row_num + 1
-                    table.loc[row_num, 'DATA'] = members[0]
-                    table.loc[row_num, field_name] = member
-                    table.loc[row_num, 'DATA'] = ','.join([f'dados_{j+1}' for j in range(len(metadata[metadata['TYPE'] == 'TIME']['MEMBERS'].tolist()))])
-                    row_num += 1
-            elif field_type == 'DATA':
-                for member in members:
-                    table.loc[row_num, '#'] = row_num + 1
-                    table.loc[row_num, 'DATA'] = members[0]
-                    table.loc[row_num, field_name] = member
-                    table.loc[row_num, 'DATA'] = ','.join([f'dados_{j+1}' for j in range(len(metadata[metadata['TYPE'] == 'TIME']['MEMBERS'].tolist()))])
-                    row_num += 1
+                for i, value in enumerate(dimension_values):
+                    table.loc[row_num, field_names[i]] = value
+
+                time_data = []
+                for time_member in time_members:
+                    data = f'{data_member[0]}, {", ".join(dimension_values)}, {time_member}'
+                    time_data.append(data)
+
+                table.loc[row_num, 'DATA'] = ', '.join(time_data)
+                row_num += 1
 
         table.to_csv(csvFile, index=False)
 
