@@ -9,9 +9,13 @@ import datetime
 #Parameters
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-THEME = 'Dark'
+THEME = 'DarkTeal12'
 
 APP_NAME = 'CSV Conversor'
+
+STATIC_PATH = os.path.dirname(os.path.abspath(__file__)) + '\static'
+
+ICON = STATIC_PATH + '\icon.ico'
 
 #Windows
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -27,7 +31,7 @@ class Conversor(WindowPattern):
     def __init__(self):
         super().__init__()
 
-        window = sg.Window(APP_NAME, layout=layouts.conversorLayout())
+        window = sg.Window(APP_NAME, layout=layouts.conversorLayout(), icon=ICON)
 
         fullPath = ''
 
@@ -38,7 +42,7 @@ class Conversor(WindowPattern):
                 break
 
             if event == 'Browse':
-                fullPath = sg.popup_get_file('Select file')
+                fullPath = sg.popup_get_file('Select file', icon=ICON)
                 if fullPath:
                     fileName = os.path.basename(fullPath)
                     window['-RES-'].update(fileName)
@@ -48,11 +52,11 @@ class Conversor(WindowPattern):
                     sg.popup('Select a valid file.', no_titlebar=True)
 
                 else:
-                    rows = sg.popup_get_text('Number of rows to show (Empty will bring 1000 rows):')
+                    rows = sg.popup_get_text('Number of rows to show (Empty will bring 100 rows):', icon=ICON)
                     try:
                         rows = int(rows)
                     except:
-                        rows = 1000
+                        rows = 100
 
                     df = pd.read_csv(fullPath, sep=';', encoding='UTF-8')
                     fullData = df.values.tolist()
@@ -65,9 +69,9 @@ class Conversor(WindowPattern):
                     df.columns = [col.strip() for col in df.columns]
                     columns = list(df.columns)
 
-                    window.disable()
+                    window.hide()
                     DataframeEditor(data=data,fullData=fullData, columns=columns, fullPath=fullPath)
-                    window.enable()
+                    window.un_hide()
                     window.bring_to_front()
                     
 
@@ -76,7 +80,7 @@ class DataframeEditor(WindowPattern):
     def __init__(self, data, fullData, columns, fullPath):
         super().__init__()
 
-        window = sg.Window(APP_NAME, layout=layouts.tableLayout(data, columns), size=(1000,480))
+        window = sg.Window(APP_NAME, layout=layouts.tableLayout(data, columns), size=(1000,480), icon=ICON)
 
         while True:
             event, self.value = window.read()
@@ -96,7 +100,7 @@ class ColumnTypes(WindowPattern):
     def __init__(self, columns, data, initialCsvPath):
         super().__init__()
 
-        window = sg.Window(APP_NAME, layout=layouts.columnsLayout(columns))
+        window = sg.Window(APP_NAME, layout=layouts.columnsLayout(columns), icon=ICON)
 
         while True:
             event, self.value = window.read()
@@ -110,7 +114,6 @@ class ColumnTypes(WindowPattern):
                     sg.popup('Select a valid folder.', no_titlebar=True)
 
                 else:
-                    print(datetime.datetime.now())
                     column_types = [self.value[f'-TYPE-{i}-'] for i in range(len(columns))]
                     members = [', '.join(set([str(row[i]) for row in data])) for i in range(len(columns))]
 
@@ -120,7 +123,7 @@ class ColumnTypes(WindowPattern):
                     elif column_types.count('DATA') < 1:
                         sg.popup('Must be at least 1 "Data" column selected. Please, try again.', no_titlebar=True)
 
-                    elif column_types.count('DIMENSIONS') < 1:
+                    elif column_types.count('DIMENSION') < 1:
                         sg.popup('Must be at least 1 "Dimension" column selected. Please, try again.', no_titlebar=True)
 
                     else:
@@ -131,13 +134,6 @@ class ColumnTypes(WindowPattern):
 
                         Util.transform_metadata_to_csv(metaPath, os.path.join(self.value['-PATH-'], 'x_datos_planos.csv'))
 
-                        sg.popup('Success!', no_titlebar=True)
-                        print(datetime.datetime.now())
+                        sg.popup(f'Metadata file and flat csv created at {self.value["-PATH-"]}.', no_titlebar=True)
                         window.close()
                         break
-                    
-
-
-#Execution
-#--------------------------------------------------------------------------------------------------------------------------------------------------------
-Conversor()
