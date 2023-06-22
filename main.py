@@ -127,13 +127,20 @@ class ColumnTypes(WindowPattern):
                         sg.popup('Must be at least 1 "Dimension" column selected. Please, try again.', no_titlebar=True)
 
                     else:
-                        Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
-                        time.sleep(3)
 
-                        metaPath = os.path.join(self.value['-PATH-'], 'x_meta.txt')
+                        if self.value['-METAONLY-'] == True:
+                            Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
+                            sg.popup(f'Metadata file created at {self.value["-PATH-"]}.', no_titlebar=True)
+                            break
 
-                        Util.transform_metadata_to_csv(metaPath, os.path.join(self.value['-PATH-'], 'x_datos_planos.csv'))
+                        else:
+                            Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
+                            time.sleep(3)
 
-                        sg.popup(f'Metadata file and flat csv created at {self.value["-PATH-"]}.', no_titlebar=True)
-                        window.close()
-                        break
+                            metaPath = os.path.join(self.value['-PATH-'], 'x_meta.txt')
+
+                            Util.transform_metadata_to_csv(metaPath, os.path.join(self.value['-PATH-'], 'x_datos_planos.csv'))
+
+                            sg.popup(f'Metadata file and flat csv created at {self.value["-PATH-"]}.', no_titlebar=True)
+                            window.close()
+                            break
