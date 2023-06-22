@@ -2,6 +2,8 @@
 
 The CSV File Converter is a simple graphical application that allows you to convert a CSV file into a formatted metadata file and a flat CSV file. The metadata file contains information about the columns in the original CSV file, such as their types and members, while the flat CSV file is a converted version of the original CSV file based on the metadata.
 
+Download link: https://drive.google.com/file/d/1QVYvyn2f3G9NyILzVSl9RubMNmU4EMed/view?usp=sharing
+
 ### Usage
 
 1. **Initial Screen**
