@@ -33,7 +33,7 @@ def tableLayout(data, headings):
 
 def columnsLayout(columns):
     col_layout = [
-        [sg.Text(col, size=(15, 1)), sg.Combo(['TIME', 'DIMENSION', 'DATA'], default_value='TIME', size=(20, 1), key=f'-TYPE-{i}-', readonly=True)]
+        [sg.Text(col, size=(15, 1)), sg.Combo(['TIME', 'DIMENSION', 'DATA', 'Day', 'Month', 'Year'], default_value='TIME', size=(20, 1), key=f'-TYPE-{i}-', readonly=True)]
         for i, col in enumerate(columns)
     ]
 
