@@ -97,6 +97,8 @@ class TimeColumn(WindowPattern):
     def __init__(self, columns, df):
         super().__init__()
 
+        df_base = df
+
         window = sg.Window(APP_NAME, layout=layouts.timeLayout(columns), icon=ICON)
 
         while True:
@@ -108,7 +110,10 @@ class TimeColumn(WindowPattern):
             elif event == '-CONV-':
                 column_types = [self.value[f'-TYPE-{i}-'] for i in range(len(columns))]
 
-                if column_types.count('Day') == 0 and column_types.count('Month') == 0 and column_types.count('Year') == 0:
+                if self.value['-PATH-'] == '':
+                    sg.popup('Select a valid folder.', no_titlebar=True)
+
+                elif column_types.count('Day') == 0 and column_types.count('Month') == 0 and column_types.count('Year') == 0:
                     sg.popup('Must select at least a "Year" column.', no_titlebar=True)
 
                 elif column_types.count('Year') == 0:
@@ -117,27 +122,56 @@ class TimeColumn(WindowPattern):
                 elif column_types.count('Day') > 1 or column_types.count('Month') > 1 or column_types.count('Year') > 1:
                     sg.popup('Please select only one column for each type.', no_titlebar=True)
 
+                elif column_types.count('Month') == 0 and column_types.count('Day') == 1:
+                    sg.popup('If the table has a')
+
                 else:
-                    columnTimeList = []
+                    columnTimeDic = {
+                        'Day': None,
+                        'Month': None,
+                        'Year': None
+                    }
                     for i, col in enumerate(columns):
                         combo_value = self.value[f'-TYPE-{i}-']
 
                         match combo_value:
                             case 'Day':
-                                columnTimeList.insert(0, col)
+                                columnTimeDic['Day'] = col
 
                             case 'Month':
-                                columnTimeList.insert(1, col)
+                                columnTimeDic['Month'] = col 
 
                             case 'Year':
-                                columnTimeList.insert(2, col)
+                                columnTimeDic['Year'] = col
 
-                    
                 
-                print(columnTimeList)
-                #df.to_csv(os.path.join(self.value['-PATH-'], 'time_column_file.csv'), index=False, sep=',')
+                    
+                    #Change dataframe
+                    day = columnTimeDic['Day']
+                    month = columnTimeDic['Month']
+                    year = columnTimeDic['Year']
 
-                    #print(f'Column {col} selected: {combo_value}')
+                    if day == None and month == None:
+                        df['TimeColumn'] = df.apply(lambda x: f"01-12-{str(x[year])}", axis=1)
+
+                    elif day == None and month != None:
+                        df['TimeColumn'] = df.apply(lambda x: f"01-{str(x[month])}-{str(x[year])}", axis=1)
+
+                    elif day != None and month == None:
+                        df['TimeColumn'] = df.apply(lambda x: f"{str(x[day])}-12-{str(x[year])}", axis=1)                        
+                
+                
+                    for value in columnTimeDic:
+                        if columnTimeDic[value] == None:
+                            pass
+
+                        else:
+                            df = df.drop(columnTimeDic[value], axis=1)
+
+                    df.to_csv(os.path.join(self.value['-PATH-'], 'new_file.csv'), index=False, sep=';')
+                    sg.popup(f'A new file with time column was created at "{self.value["-PATH-"]}"')
+                    window.close()
+                    break
                     
 
 
