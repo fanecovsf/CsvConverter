@@ -106,19 +106,33 @@ class TimeColumn(WindowPattern):
                 break
 
             elif event == '-CONV-':
-                columnTimeList = []
-                for i, col in enumerate(columns):
-                    combo_value = self.value[f'-TYPE-{i}-']
+                column_types = [self.value[f'-TYPE-{i}-'] for i in range(len(columns))]
 
-                    match combo_value:
-                        case 'Day':
-                            columnTimeList.insert(0, col)
+                if column_types.count('Day') == 0 and column_types.count('Month') == 0 and column_types.count('Year') == 0:
+                    sg.popup('Must select at least a "Year" column.', no_titlebar=True)
 
-                        case 'Month':
-                            columnTimeList.insert(1, col)
+                elif column_types.count('Year') == 0:
+                    sg.popup('Must select at least one "Year" column.', no_titlebar=True)
 
-                        case 'Year':
-                            columnTimeList.insert(2, col)
+                elif column_types.count('Day') > 1 or column_types.count('Month') > 1 or column_types.count('Year') > 1:
+                    sg.popup('Please select only one column for each type.', no_titlebar=True)
+
+                else:
+                    columnTimeList = []
+                    for i, col in enumerate(columns):
+                        combo_value = self.value[f'-TYPE-{i}-']
+
+                        match combo_value:
+                            case 'Day':
+                                columnTimeList.insert(0, col)
+
+                            case 'Month':
+                                columnTimeList.insert(1, col)
+
+                            case 'Year':
+                                columnTimeList.insert(2, col)
+
+                    
                 
                 print(columnTimeList)
                 #df.to_csv(os.path.join(self.value['-PATH-'], 'time_column_file.csv'), index=False, sep=',')
