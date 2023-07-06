@@ -47,6 +47,24 @@ class Conversor(WindowPattern):
                     fileName = os.path.basename(fullPath)
                     window['-RES-'].update(fileName)
 
+            if event == 'Create time column':
+                if fullPath == '':
+                    sg.popup('Select a valid file.', no_titlebar=True)
+
+                else:
+
+                    df = pd.read_csv(fullPath, sep=';', encoding='UTF-8')
+                    dfFull = df
+                    fullData = df.values.tolist()
+                    data = df.values.tolist()
+                    df.columns = [col.strip() for col in df.columns]
+                    columns = list(df.columns)
+
+                    window.hide()
+                    TimeColumn(columns, dfFull)
+                    window.un_hide()
+                    window.bring_to_front()
+
             if event == 'Open':
                 if fullPath == '':
                     sg.popup('Select a valid file.', no_titlebar=True)
@@ -73,6 +91,39 @@ class Conversor(WindowPattern):
                     DataframeEditor(data=data,fullData=fullData, columns=columns, fullPath=fullPath)
                     window.un_hide()
                     window.bring_to_front()
+
+
+class TimeColumn(WindowPattern):
+    def __init__(self, columns, df):
+        super().__init__()
+
+        window = sg.Window(APP_NAME, layout=layouts.timeLayout(columns), icon=ICON)
+
+        while True:
+            event, self.value = window.read()
+
+            if event == sg.WIN_CLOSED:
+                break
+
+            elif event == '-CONV-':
+                columnTimeList = []
+                for i, col in enumerate(columns):
+                    combo_value = self.value[f'-TYPE-{i}-']
+
+                    match combo_value:
+                        case 'Day':
+                            columnTimeList.insert(0, col)
+
+                        case 'Month':
+                            columnTimeList.insert(1, col)
+
+                        case 'Year':
+                            columnTimeList.insert(2, col)
+                
+                print(columnTimeList)
+                #df.to_csv(os.path.join(self.value['-PATH-'], 'time_column_file.csv'), index=False, sep=',')
+
+                    #print(f'Column {col} selected: {combo_value}')
                     
 
 
@@ -117,7 +168,10 @@ class ColumnTypes(WindowPattern):
                     column_types = [self.value[f'-TYPE-{i}-'] for i in range(len(columns))]
                     members = [', '.join(set([str(row[i]) for row in data])) for i in range(len(columns))]
 
-                    if column_types.count('TIME') > 1:
+                    if column_types.count('') > 0:
+                        sg.popup('Must select one of the 3 available types for the column.')
+
+                    elif column_types.count('TIME') > 1:
                         sg.popup('Must be just 1 "Time" column selected. Please, try again.', no_titlebar=True)
 
                     elif column_types.count('DATA') < 1:
