@@ -1,53 +1,37 @@
-## CSV File Converter
+Download link: https://drive.google.com/file/d/1kb7PDeSi7i2GGK5zq4GJeMEweUKn252S/view?usp=sharing
 
-The CSV File Converter is a simple graphical application that allows you to convert a CSV file into a formatted metadata file and a flat CSV file. The metadata file contains information about the columns in the original CSV file, such as their types and members, while the flat CSV file is a converted version of the original CSV file based on the metadata.
+CSV Conversor User Interface
 
-Download link: https://drive.google.com/file/d/1zSQBOSKk-yJEmhXwX9-A3vJmBp9fUadH/view?usp=sharing
+The CSV Conversor application provides the following features:
 
-### Usage
+### Prerequisites
 
-1. **Initial Screen**
+Before using the CSV Conversor, ensure that you have the following software installed on your system:
 
-   Upon launching the application, you'll see the initial screen titled "CSV File Converter." The screen provides two buttons: "Browse" and "Open."
+1. Windows Operating System: The CSV Conversor is designed to run on the Windows platform.
 
-   - **Browse**: Clicking this button opens a file selection dialog. Choose the CSV file that you want to convert.
+### Running the CSV Conversor
 
-   - **Open**: After selecting a valid CSV file using the "Browse" button, click "Open" to proceed. If you haven't selected a file or selected an invalid file, a pop-up message will prompt you to select a valid file.
+To use the CSV Conversor, follow these steps:
 
-2. **CSV File Preview**
+1. Download the CSV Conversor executable file (e.g., `CSV Conversor.exe`) from a reliable source or obtain it from the developer.
 
-   After clicking "Open," a new screen will appear displaying a preview of the CSV file. The screen shows a table with a subset of the data from the CSV file. By default, the table displays the first 100 rows, but you can specify the number of rows to show.
+2. Double-click the `CSV Conversor.exe` file to run the application.
 
-   - **Number of rows**: You can input the desired number of rows to show in the pop-up window that appears after clicking "Open." If you leave it empty, it will display 100 rows.
+3. The CSV Conversor application window will open.
 
-   - **Table navigation**: You can scroll through the table vertically to view the data. The table also supports horizontal scrolling if the columns exceed the available width.
+### CSV Conversor User Interface
 
-   - **Select column types**: Clicking this button allows you to specify the types for each column in the CSV file.
+The CSV Conversor application provides the following features:
 
-3. **Column Types Selection**
+1. **Initial screen**: The initial screen of the application allows you to browse and select a CSV file. Click the "Browse" button and choose a CSV file from your system. The selected file name will be displayed on the screen. You can then perform further operations on the selected file.
 
-   In this screen, you need to assign types to each column in the CSV file. The following rules apply when selecting the types for the columns:
+2. **Create time column**: After selecting a CSV file, you can click the "Create time column" button to create a new time column based on the selected columns. Before clicking this button, make sure you have selected at least one "Year" column and optionally a "Day" and/or "Month" column. If the selection is valid, a window will open where you can choose a folder to save the new file with the time column. After selecting the folder, click the "Generate" button to create the new file. A message will be displayed indicating the successful creation of the file.
 
-   - Quantity of Data Columns: At least one column must be assigned the "DATA" type. This type represents the data values in the CSV file.
+3. **Open**: Similar to the "Create time column" operation, the "Open" button allows you to open a CSV file and display its contents in a table format. Before clicking this button, make sure you have selected a valid CSV file. After clicking the "Open" button, a window will open where you can specify the number of rows to show (default is 100 rows). You can enter a specific number or leave it empty to show the default number of rows. After entering the number of rows, click the "OK" button, and the CSV file's contents will be displayed in a table.
 
-   - Quantity of Time Columns: Only one column can be assigned the "TIME" type. This type is used to represent time-related data.
+4. **Select column types**: This operation allows you to select the types for each column in the opened CSV file. After opening a CSV file and displaying its contents in a table, click the "Select column types" button. A window will open where you can select the column types (TIME, DIMENSION, or DATA) for each column. Make sure to select at least one "Data" column and one "Dimension" column. Once you have made the selections, choose a folder to save the metadata file, and click the "Convert" button. The metadata file will be created in the specified folder.
 
-   - Quantity of Dimension Columns: At least one column must be assigned the "DIMENSION" type. This type is used to represent dimension-related data.
+### Conclusion
 
-   - Selection Validation: The application validates the column types selected according to these rules. If the rules are not met, a pop-up message will inform you of the issue and prompt you to make the necessary adjustments.
-
-   - Conversion: Once the column types have been assigned correctly, you can proceed with the conversion process by clicking the "Convert" button.
-
-4. **Conversion Process**
-
-   Once you click "Convert," the application will generate the metadata and flat CSV files based on the selected column types.
-
-   - **Metadata file**: The metadata file contains information about the columns, including the column index, type, field name, and members. The file is saved as `x_meta.txt` in the selected folder.
-
-   - **Flat CSV file**: The flat CSV file is a converted version of the original CSV file based on the metadata. It follows the specified column types and is saved as `x_datos_planos.csv` in the selected folder.
-
-   - **Completion message**: After the conversion process is complete, a pop-up message will confirm that the metadata file and flat CSV file have been created and saved in the selected folder.
-
-5. **Closing the Application**
-
-   You can close the application at any time by clicking the close button (X) on the application window or by clicking the "Menu" button in the "CSV File Preview" or "Column Types Selection" screens.
+The CSV Conversor application provides a user-friendly interface for performing various operations on CSV files. By following the steps mentioned above, you can utilize the application to create time columns, open and view CSV files, select column types, and convert CSV files. The provided executable file eliminates the need to have Python and its required libraries installed on your system. Feel free to explore the application and use it for your CSV conversion needs.

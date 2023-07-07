@@ -16,12 +16,22 @@ class Util:
         with open(fileMeta, 'w') as file:
             file.write('#,TYPE,FIELD,MEMBERS\n')
 
+            data_columns = [str(columns[i]) for i in range(len(columns)) if columnTypes[i] == 'DATA']
+            row = f"1,DATA,DATA,\"{', '.join(data_columns)}\"\n"
+            file.write(row)
+
+            index = 2
             for i in range(len(columns)):
                 field_type = columnTypes[i]
                 field = str(columns[i]).upper()
-                field_members = members[i]
-                row = f"{i + 1},{field_type},{field},\"{field_members}\"\n"
-                file.write(row)
+                if field_type != 'DATA':
+                    field_members = members[i]
+                    if field_type != 'TIME':
+                        field_members += ', All'  # Add 'All' to dimension members
+
+                    row = f"{index},{field_type},{field},\"{field_members}\"\n"
+                    file.write(row)
+                    index += 1
 
 
     def transform_metadata_to_csv(metadata_file, csvFile):

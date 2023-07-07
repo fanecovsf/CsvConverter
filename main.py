@@ -152,13 +152,13 @@ class TimeColumn(WindowPattern):
                     year = columnTimeDic['Year']
 
                     if day == None and month == None:
-                        df['TimeColumn'] = df.apply(lambda x: f"01-12-{str(x[year])}", axis=1)
+                        df['Date'] = df.apply(lambda x: f"01-12-{str(x[year])}", axis=1)
 
                     elif day == None and month != None:
-                        df['TimeColumn'] = df.apply(lambda x: f"01-{str(x[month])}-{str(x[year])}", axis=1)
+                        df['Date'] = df.apply(lambda x: f"01-{str(x[month])}-{str(x[year])}", axis=1)
 
                     elif day != None and month == None:
-                        df['TimeColumn'] = df.apply(lambda x: f"{str(x[day])}-12-{str(x[year])}", axis=1)                        
+                        df['Date'] = df.apply(lambda x: f"{str(x[day])}-12-{str(x[year])}", axis=1)                        
                 
                 
                     for value in columnTimeDic:
