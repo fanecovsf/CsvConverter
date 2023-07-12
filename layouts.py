@@ -6,8 +6,8 @@ import PySimpleGUI as sg
 def conversorLayout():
     layout = [
         [sg.Push(), sg.Text('CSV Conversor', justification='center', font=('Arial', 14), size=(35,0), pad=(10,10)), sg.Push()],
-        [sg.Push(), sg.Text('',key='-RES-'), sg.Push()],
-        [sg.Push(), sg.Button('Browse', font=('Arial', 12), size=(12,0)), sg.Button('Create time column', font=('Arial', 12), size=(18,0)), sg.Button('Open', font=('Arial', 12), size=(12,0)), sg.Push()],
+        [sg.Push(), sg.Text('',key='-RES-'), sg.Push(), sg.Text('Select separator: ', font=('Arial', 10)), sg.Combo([';', '|', ',', '.', '/', '-'], default_value=',', readonly=False, key='-SEP-', size=(8,0))],
+        [sg.Push(), sg.Button('Browse', font=('Arial', 10), size=(12,0)), sg.Button('Create time column', font=('Arial', 10), size=(18,0)), sg.Button('Generate metadata', font=('Arial', 10), size=(18,0)), sg.Button('Convert CSV', font=('Arial', 10), size=(12,0)), sg.Push()],
     ]
 
     return layout
@@ -57,7 +57,6 @@ def columnsLayout(columns):
         [sg.Text('Select the types:')],
         [sg.Column(col_layout, size=(400, 300), scrollable=True, vertical_scroll_only=True)],
         [sg.Push(), sg.Button('Convert', key='-CONV-', font=('Arial', 12), size=(15, 0), pad=(0, 10)), sg.FolderBrowse('Select folder', target='-PATH-', font=('Arial', 12), size=(15, 0)), sg.Push()],
-        [sg.Checkbox('Only generate the metadata file', default=False, key='-METAONLY-')],
         [sg.Push(), sg.Input('', key='-PATH-', size=(60,0)), sg.Push()]
     ]
 

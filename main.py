@@ -65,7 +65,7 @@ class Conversor(WindowPattern):
                     window.un_hide()
                     window.bring_to_front()
 
-            if event == 'Open':
+            if event == 'Generate metadata':
                 if fullPath == '':
                     sg.popup('Select a valid file.', no_titlebar=True)
 
@@ -76,7 +76,12 @@ class Conversor(WindowPattern):
                     except:
                         rows = 100
 
-                    df = pd.read_csv(fullPath, sep=';', encoding='UTF-8')
+                    try:
+                        df = pd.read_csv(fullPath, sep=self.value['-SEP-'], encoding='UTF-8')
+                    
+                    except:
+                        df = pd.read_csv(fullPath, sep=self.value['-SEP-'], encoding='ISO-8859-1')
+
                     fullData = df.values.tolist()
                     if len(df) < rows:
                         rows = len(df)
@@ -229,20 +234,7 @@ class ColumnTypes(WindowPattern):
                         sg.popup('Must be at least 1 "Dimension" column selected. Please, try again.', no_titlebar=True)
 
                     else:
+                        Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
+                        sg.popup(f'Metadata file created at {self.value["-PATH-"]}.', no_titlebar=True)
+                        break
 
-                        if self.value['-METAONLY-'] == True:
-                            Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
-                            sg.popup(f'Metadata file created at {self.value["-PATH-"]}.', no_titlebar=True)
-                            break
-
-                        else:
-                            Util.saveMetaData(columns, column_types, members, self.value['-PATH-'])
-                            time.sleep(3)
-
-                            metaPath = os.path.join(self.value['-PATH-'], 'x_meta.txt')
-
-                            Util.transform_metadata_to_csv(metaPath, os.path.join(self.value['-PATH-'], 'x_datos_planos.csv'))
-
-                            sg.popup(f'Metadata file and flat csv created at {self.value["-PATH-"]}.', no_titlebar=True)
-                            window.close()
-                            break
